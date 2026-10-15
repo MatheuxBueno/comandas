@@ -1,0 +1,10 @@
+{
+  "name": "Comandas do Bar",
+  "short_name": "Comandas",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#111111",
+  "theme_color": "#151515",
+  "description": "Comandas, cardápio e fechamento de caixa offline",
+  "icons": []
+}

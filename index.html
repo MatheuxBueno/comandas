@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#151515"><link rel="manifest" href="manifest.json">
+<title>Comandas do Bar</title>
+<style>
+:root{font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:#f5f5f5;background:#111}*{box-sizing:border-box}body{margin:0;padding:0 0 82px}header{background:#191919;padding:16px;position:sticky;top:0;z-index:3;border-bottom:1px solid #333}h1{font-size:20px;margin:0}small,.muted{color:#aaa}.wrap{padding:14px;max-width:760px;margin:auto}.tabs{display:flex;gap:6px;overflow:auto;margin:12px 0}.tabs button{white-space:nowrap}.tab{display:none}.tab.active{display:block}button,input,select,textarea{font:inherit;border-radius:10px;border:1px solid #444;padding:11px;background:#222;color:#fff}button{cursor:pointer}button.primary{background:#f4b942;color:#161616;border:0;font-weight:700}button.danger{background:#642a2a}button:disabled{opacity:.5}.tabs button.active{background:#f4b942;color:#111;border:0}.row{display:flex;gap:8px;align-items:center}.row>*{min-width:0;flex:1}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.card{background:#1b1b1b;border:1px solid #333;border-radius:14px;padding:13px;margin:9px 0}.product{min-height:72px;text-align:left}.product b{display:block}.product span{color:#f4b942}.total{font-size:24px;font-weight:800}.pill{font-size:12px;background:#333;padding:4px 8px;border-radius:20px}.line{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid #333}.line:last-child{border:0}.hidden{display:none!important}.notice{background:#272313;color:#ffe4a0;border-radius:10px;padding:10px;font-size:13px}.actions{display:flex;gap:8px;flex-wrap:wrap}.actions button{flex:1}.field{display:grid;gap:5px;margin:10px 0}.field input,.field select,.field textarea{width:100%}nav{position:fixed;bottom:0;left:0;right:0;background:#191919;border-top:1px solid #333;padding:8px max(8px,env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom));display:flex;justify-content:space-around;z-index:5}nav button{background:transparent;border:0;font-size:12px;padding:8px 6px}nav button.active{color:#f4b942}.empty{text-align:center;padding:22px;color:#aaa}.status{font-size:12px;margin-top:5px;color:#a8d8a8}@media(min-width:600px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+</style></head>
+<body>
+<header><div class="row"><div><h1>🍔 Comandas do Bar</h1><small id="barLabel">Controle simples de pedidos</small></div><span class="pill" id="syncBadge">Só neste celular</span></div></header>
+<main class="wrap">
+<div id="cloudSetup" class="card">
+<h3>Sincronização entre celulares</h3>
+<p class="muted">O modo local funciona sem internet. Para compartilhar comandas entre celulares, configure o Firebase gratuito e entre com a mesma conta nos aparelhos.</p>
+<details><summary>Configurar conexão</summary>
+<div class="field"><label>Nome do bar</label><input id="barName" placeholder="Ex.: Bar do João"></div>
+<div class="field"><label>ID compartilhado do bar (igual em todos os celulares)</label><input id="barId" placeholder="ex: bar-centro-01"></div>
+<div class="field"><label>Firebase API Key</label><input id="apiKey" autocomplete="off"></div>
+<div class="field"><label>Firebase Database URL</label><input id="dbUrl" placeholder="https://SEU-PROJETO-default-rtdb.firebaseio.com"></div>
+<div class="field"><label>Firebase Project ID</label><input id="projectId"></div>
+<div class="field"><label>E-mail da conta compartilhada</label><input id="email" type="email" autocomplete="username"></div>
+<div class="field"><label>Senha</label><input id="password" type="password" autocomplete="current-password"></div>
+<div class="actions"><button class="primary" id="connectBtn">Conectar / entrar</button><button id="localBtn">Usar só neste celular</button></div>
+<p class="muted">As configurações ficam salvas neste aparelho. Não compartilhe a senha da conta fora da equipe.</p>
+</details>
+</div>
+<div class="tabs" id="tabs">
+<button class="active" data-tab="orders">Comandas</button><button data-tab="menu">Cardápio</button><button data-tab="sales">Caixa do dia</button><button data-tab="settings">Ajustes</button>
+</div>
+<section id="orders" class="tab active">
+<div class="row"><h2>Comandas abertas</h2><button class="primary" id="newOrder">+ Nova</button></div>
+<div id="ordersList"></div>
+<div id="orderEditor" class="card hidden">
+<div class="row"><div><h3 id="orderTitle">Comanda</h3><small id="orderMeta"></small></div><button id="closeEditor">Fechar</button></div>
+<div class="field"><label>Nome / número (opcional)</label><input id="customerName" placeholder="Ex.: Mesa 3 ou João"></div>
+<div class="field"><label>Observação do pedido</label><input id="orderNote" placeholder="Ex.: sem cebola"></div>
+<h4>Adicionar itens</h4><div class="grid" id="productButtons"></div>
+<h4>Itens lançados</h4><div id="orderLines"></div>
+<div class="line"><b>Total</b><span class="total" id="orderTotal">R$ 0,00</span></div>
+<div class="actions"><button id="saveOrder" class="primary">Salvar comanda</button><button id="payOrder">Fechar conta / receber</button></div>
+</div>
+</section>
+<section id="menu" class="tab">
+<h2>Cardápio e preços</h2>
+<div class="card"><div class="field"><label>Nome do produto</label><input id="prodName" placeholder="Ex.: X-salada"></div><div class="row"><div class="field"><label>Preço (R$)</label><input id="prodPrice" type="number" min="0" step="0.01" placeholder="18,00"></div><div class="field"><label>Categoria</label><select id="prodCat"><option>Lanches</option><option>Bebidas</option><option>Porções</option><option>Outros</option></select></div></div><button class="primary" id="addProduct">Adicionar produto</button></div>
+<div id="menuList"></div>
+</section>
+<section id="sales" class="tab">
+<h2>Caixa do dia</h2><div class="card"><small>Vendas recebidas hoje</small><div class="total" id="dayTotal">R$ 0,00</div><div id="paymentBreakdown"></div></div><h3>Contas fechadas hoje</h3><div id="salesList"></div><button id="exportBtn">Exportar backup (JSON)</button><div class="field"><label>Restaurar backup JSON</label><input type="file" id="importFile" accept=".json,application/json"></div>
+</section>
+<section id="settings" class="tab">
+<h2>Ajustes</h2><div class="card"><p>Modo atual: <b id="modeText">Local neste celular</b></p><p class="muted">No modo local, os dados ficam apenas neste aparelho. Com sincronização, os aparelhos conectados à mesma conta e ao mesmo ID do bar compartilham comandas e vendas quando há internet; lançamentos offline são enviados quando a conexão voltar.</p><div class="actions"><button id="backupBtn">Exportar backup</button><button class="danger" id="logoutBtn">Desconectar nuvem</button></div></div>
+<div class="notice">Dica: faça backup regularmente. Não desinstale o app antes de exportar seus dados se estiver usando apenas o modo local.</div>
+</section>
+</main>
+<nav><button class="active" data-tab="orders">🧾<br>Comandas</button><button data-tab="menu">🍔<br>Cardápio</button><button data-tab="sales">💰<br>Caixa</button><button data-tab="settings">⚙️<br>Ajustes</button></nav>
+<script type="module" src="app.js"></script>
+</body></html>

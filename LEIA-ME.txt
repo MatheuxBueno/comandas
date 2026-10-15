@@ -1,0 +1,43 @@
+COMANDAS DO BAR — versão inicial
+================================
+
+O que já funciona
+- Criar comandas e lançar produtos.
+- Cadastrar/editar/excluir produtos e preços.
+- Fechar conta escolhendo forma de pagamento.
+- Ver vendas recebidas no dia.
+- Exportar/restaurar backup JSON.
+- Interface instalável como app (PWA), com cache para abrir offline depois da primeira carga.
+- Modo local sem mensalidade.
+
+IMPORTANTE SOBRE VÁRIOS CELULARES
+Para compartilhar comandas entre aparelhos, configure a sincronização Firebase descrita abaixo. Sem isso, cada aparelho mantém seus próprios dados. No modo sincronizado, as alterações offline ficam guardadas no aparelho e tentam ser enviadas quando a internet volta. Faça testes antes de usar em horário de movimento; esta é uma versão inicial, não um sistema fiscal/PDV certificado.
+
+CONFIGURAÇÃO FIREBASE (gratuito dentro dos limites do plano Spark)
+1. Acesse https://console.firebase.google.com/ e crie um projeto.
+2. Em Authentication > Sign-in method, habilite Email/Password.
+3. Em Authentication > Users, crie uma conta para uso da equipe. Use a mesma conta nos celulares.
+4. Em Realtime Database, crie um banco. Copie a URL exibida.
+5. Em Realtime Database > Rules, publique estas regras:
+{
+  "rules": {
+    "bars": {
+      "$barId": {
+        ".read": "auth != null",
+        ".write": "auth != null"
+      }
+    }
+  }
+}
+Essas regras exigem login. Como todos os aparelhos usarão a mesma conta, proteja bem a senha e não compartilhe o ID do bar publicamente. Usuários autenticados no projeto podem acessar os dados do caminho de bares; use este projeto apenas para a equipe e não guarde dados pessoais sensíveis de clientes.
+6. Em Project settings > General > Your apps, registre um app Web (ícone </>) e copie a Web API Key. O Project ID aparece nessa tela.
+7. Hospede a pasta em um endereço HTTPS (por exemplo, GitHub Pages ou outro host estático). O service worker não funciona corretamente abrindo o arquivo diretamente como file://.
+8. Abra o endereço HTTPS no Android, entre em Configurar conexão e informe API Key, Database URL, Project ID, e-mail/senha e um ID de bar idêntico em todos os aparelhos.
+9. No Chrome Android, menu ⋮ > Instalar app ou Adicionar à tela inicial.
+10. Teste com comandas fictícias nos dois aparelhos antes de usar de verdade.
+
+OBSERVAÇÕES
+- Não existe APK nativo compilado neste ZIP. Esta versão é um app web instalável (PWA), que fica com ícone na tela inicial do Android.
+- Firebase e hospedagem têm planos gratuitos sujeitos a limites e mudanças.
+- Não desinstale nem limpe os dados do navegador sem exportar backup.
+- Sincronização simultânea foi feita como versão inicial e precisa ser validada em teste real; em alterações simultâneas na mesma comanda, confira o resultado antes de fechar a conta.
